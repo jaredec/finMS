@@ -1,0 +1,203 @@
+---
+title: "PSTAT 126 - Assignment 2"
+subtitle: "Fall 2022"
+author: "Due: Tuesday, October 11 at 11:59 pm on Canvas"
+output:
+  pdf_document:
+    number_sections: true
+---
+
+*Note: **Submit both your `Rmd` and generated pdf file to Canvas.** Use the same indentation level as **Solution** markers to write your solutions. Improper indentation will break your document.*
+
+```{r setup, include=FALSE}
+# formats rendered outputs from inline R code
+# Register an inline hook:
+knitr::knit_hooks$set(inline = function(x) {
+  x <- sprintf("%1.2f", x)
+  paste(x, collapse = ", ")
+})
+```
+
+```{r message=FALSE}
+library(alr4)
+library(ggplot2)
+data(UN11)
+```
+
+1.  The data set `UN11` in the `alr4` package contains several variables, including `ppgdp`, the gross national product per person in U.S. dollars, and `fertility`, the birth rate per 1000 females, from the year 2009. The data are for 199 localities, and we will study the regression of `fertility` on `ppgdp`.
+
+    (a) Identify the predictor and response.
+
+    **Solution**:
+
+    ```{r}
+    fertility <- UN11$fertility
+    ppgdp <- UN11$ppgdp
+    ```
+
+    The response is fertility, the predictor is ppgdp.
+
+    (b) Draw the scatterplot of fertility against ppgdp and describe the relationship between these two variables. Is the trend linear?
+
+    **Solution**:
+
+    ```{r}
+      plot(ppgdp,fertility,
+      xlab = 'Per Capita GDP ($)',
+      ylab = 'Fertility')
+    ```
+
+The trend is NOT linear, we can see that there is a decreasing relationship between ppgdp and fertility.
+
+    (c) Replace both variables by their natural logarithms and draw another scatterplot. Does the simple linear regression model seem plausible for a summary of this graph?
+
+      **Solution**:
+
+```{r}
+plot(log(ppgdp),log(fertility),
+xlab = 'Per Capita GDP ($)',
+ylab = 'Fertility')
+```
+Yes, after taking the log of both variables, an SLR model         seems plausible for the summary of the graph.
+
+2.  The data set `prostate` in the `faraway` package is from a study of 97 men with prostate cancer. Interest is in predicting `lpsa` (log prostate specific antigen) with `lcavol` (log cancer volume). You may not use the function `lm` for this question.
+
+    (a) Draw a scatterplot - does a simple linear regression model seem reasonable?
+
+        **Solution**:
+
+        ```{r}
+        library(faraway)
+        ```
+
+        ```{r}
+        data("prostate")
+        lcavol <- prostate$lcavol
+        lpsa <- prostate$lpsa
+        plot(lcavol,lpsa,
+             xlab= 'log cancer volume',
+             ylab= 'log prostate specific antigen')
+        ```
+
+        Yes, a SLR model seems reasonable.
+
+    (b) Compute the values $\bar{x}, \bar{y}, S_{xx}, S_{yy}$ and $S_{xy}$. Compute the ordinary least squares estimates of the intercept and slope for the simple linear regression model, and draw the fitted line on your plot from part a).
+
+        **Solution:**
+
+        ```{r}
+        xbar <- mean(lcavol)
+        xbar
+        ybar <- mean(lpsa)
+        ybar
+        sxx <- sum((lcavol-xbar)^2)
+        sxx
+        syy <- sum((lpsa-ybar)^2)
+        syy
+        sxy <- sum((lcavol-xbar)*(lpsa-ybar))
+        sxy
+        ```
+
+        ```{r}
+        b1 <- sxy/sxx
+        b0 <- ybar-(b1*xbar)
+        b0
+        b1
+        ```
+
+        ```{r}
+        plot(lcavol,lpsa,
+             xlab= 'log cancer volume',
+             ylab='log prostate specific antigen')
+        abline(b0,b1)
+        ```
+
+    (c) Compute $\hat{\sigma}^{2}$ and find the estimated standard errors of $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$. Also find the estimated covariance between $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$.
+
+        **Solution:**
+
+        ```{r}
+        yhat <- b0+b1*lcavol
+        n <- length(lpsa)
+        mse <- (1/(n-2))*sum((lpsa-yhat)^2)
+        mse
+        ```
+
+        ```{r}
+        b0hatSE <- sqrt(mse*(1/n+(xbar^2)/sxx))
+        b0hatSE
+        b1hatSE <- sqrt(mse/sxx)
+        b1hatSE
+        covariance <- -xbar*mse/sxx
+        covariance
+        ```
+
+    (d) Carry out $t$-tests for the two null hypotheses $\beta_{0}=0$ and $\beta_{1}=0$, reporting the value of the test statistic and a $p$-value in each case.
+
+        **Solution:**
+
+        ```{r}
+        testb0 = b0/b0hatSE
+        pvalb0 = 2*pt(abs(testb0), df= n-2, lower.tail = F)
+        testb0
+        pvalb0
+        ```
+
+        ```{r}
+        testb1 = b1/b1hatSE
+        pvalb1 = 2*pt(abs(testb1), df= n-2, lower.tail = F)
+        testb1
+        pvalb1
+        ```
+
+3.  The data set `ftcollinstemp` in the `alr4` package gives the mean temperature in the fall of each year, defined as September 1 to November 30 , and the mean temperature in the following winter, defined as December 1 to the end of February in the following calendar year, in degrees Fahrenheit, for Ft. Collins, CO (Colorado Climate Center, 2012). These data cover the time period from 1900 to 2010 . The question of interest is: Does the average fall temperature predict the average winter temperature?
+
+```{r}
+library(alr4)
+```
+
+```{r}
+data("ftcollinstemp")
+fall <- ftcollinstemp$fall
+winter <- ftcollinstemp$winter
+```
+
+(a) Use the `lm` function in $\mathrm{R}$ to fit the regression of the response on the predictor. Draw a scatterplot of the data and add your fitted regression line.
+
+    **Solution:**
+
+    ```{r}
+    regression <- lm(winter~fall)
+    ```
+
+    ```{r}
+    plot(fall,winter,
+    xlab= 'Fall Temps',
+    ylab = 'Winter Temps',)
+    abline(coef(regression))
+    ```
+
+    (b) Test the null hypothesis that the slope is 0 against a two-sided alternative at $\alpha=0.01$, and interpret your findings.
+
+        **Solution:**
+
+    ```{r}
+    summary(regression)$coefficients
+    ```
+
+    ```{r}
+    pval <- .04283611
+    pval
+    ```
+
+    Given alpha = 0.01, we have that our p-val\>alpha and thus the slope of the regression line is 0.
+
+    (c) What percentage of the variability in winter is explained by fall?
+
+        **Solution:**
+
+    ```{r}
+    summary(regression)$r.squared
+    ```
+
+    The percentage of the variability in winter explained by fall is equal to 3.71%
