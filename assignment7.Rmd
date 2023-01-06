@@ -1,0 +1,166 @@
+---
+title: "PSTAT 126 - Assignment 7"
+subtitle: "Fall 2022"
+author: "Due: Tuesday, November 22 at 11:59 pm on Canvas"
+output:
+  pdf_document:
+    number_sections: true
+---
+
+*Note: **Submit both your `Rmd` and generated pdf file to Canvas.** Use the same indentation level as **Solution** markers to write your solutions. Improper indentation will break your document.*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r include=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+1.  The data set `mantel` in the `alr4` package has a response $Y$ and three predictors $X_1$, $X_2$ and $X_3$, apply the forward selection and backward elimination algorithms, using AIC as a criterion function. Also, find AIC and BIC for all possible models and compare results. Which appear to be the active regressors?\
+    **Solution**:
+
+```{r}
+library(alr4)
+data("mantel")
+
+mlm <- lm(Y ~ ., data = mantel)
+m0 <- lm(Y ~ 1, data = mantel)
+l <- length(mantel$Y)
+```
+
+```{r}
+# AIC
+step(m0, scope = list(lower = m0, upper = mlm), 
+     direction = "forward")
+# BIC
+step(m0, scope = list(lower = m0, upper = mlm), 
+     direction = "forward", k = log(l), trace=0)
+```
+
+```{r}
+# AIC
+step(mlm, scope = list(lower = m0, upper = mlm), 
+     direction = "backward")
+# BIC
+step(mlm, scope = list(lower = m0, upper = mlm), 
+     direction = "backward", k = log(l), trace=0)
+```
+
+For forward selection for both AIC and BIC, only X3 is an active aggressor. For backward selection for both AIC and BIC, X1 and X2 are active aggressors.
+
+2.  In an unweighted regression problem with $n = 54$, $p = 4$, the results included $\hat\sigma = 4.0$ and the following statistics for four of the cases:\
+
+    ```{=tex}
+    \begin{center}
+    \begin{tabular}{ cc } 
+     \hline
+     $e_i$ & $h_{ii}$ \\
+     \hline 
+     1.000 & 0.900 \\ 
+     1.732 & 0.750 \\
+     9.000 & 0.250 \\
+     10.295 & 0.185 \\
+     \hline \\
+    \end{tabular}
+    \end{center}
+    ```
+
+For each of these four cases, compute $r_i$, $D_i$, and $t_i$. Test each of the four cases to be an outlier. Make a qualitative statement about the influence of each case on the analysis.\
+**Solution**:
+
+```{r}
+ei <- c(1,1.732,9,10.295)
+hii <- c(.9,.75,.25,.185)
+
+ri <- ei[1]/(4*sqrt(1-hii[1]))
+Di <- ri[1]^2*hii[1]/4*1/(1-hii[1])
+ti <- ri[1]*sqrt((49)/(50-ri[1]^2))
+
+
+```
+
+```{r}
+for(i in c(2:4)){
+  r <- ei[i]/(4*sqrt(1-hii[i]))
+  ri <- c(ri,r)
+  
+  D <- ri[i]^2*hii[i]/4*1/(1-hii[i])
+  Di <- c(Di,D)
+  
+  t <- ri[i]*sqrt((49)/(50-ri[i]^2))
+  ti <- c(ti,t)
+  
+}
+```
+
+```{r}
+# For each of the four cases
+ri[1:4]
+Di[1:4]
+ti[1:4]
+```
+
+Notice that for r3, r4 and t3, t4 the values are \> 2. Hence these are potential outliers at 3 and 4. Moreover, observing Cook's distance measure Di, notice the 1st case is likely influential, as Cook's distance measures the changes to the fitted values when the i-th observation is removed.
+
+3.  The `lathe1` data set from the `alr4` package contains the results of an experiment on characterizing the life of a drill bit in cutting steel on a lathe. Two factors were varied in the experiment, `Speed` and `Feed` rate. The response is `Life`, the total time until the drill bit fails, in minutes. The values of `Speed` and `Feed` in the data have been coded by computing $$
+    \begin{aligned}
+    \texttt{Speed} &= \frac{\text{Actual speed in feet per minute}-900}{300}\\
+    \texttt{Feed} &= \frac{\text{Actual feed rate in thousandths of an inch per revolution}-13}{6}.
+    \end{aligned}
+    $$
+
+<!-- -->
+
+(a) Starting with the full second-order model $$
+      E(\texttt{Life}|\texttt{Speed, Feed})=
+      \beta_0+\beta_1\texttt{Speed}+\beta_2\texttt{Feed}+
+      \beta_{11}\texttt{Speed}^2+\beta_{22}\texttt{Feed}^2+
+      \beta_{12}\texttt{Speed}*\texttt{Feed},
+    $$ use the Box--Cox method to show that an appropriate scale for the response is the logarithmic scale.\
+    **Solution**:
+
+```{r}
+library(MASS)
+library(alr4)
+data("lathe1")
+lathelm <- lm(Life ~ Speed + Feed +I(Speed^2) + I(Feed^2) + Speed*Feed, data = lathe1)
+boxcox(lathelm)
+```
+
+lambda = 0 is in the 95% confidence interval, therefore an appropriate scale for the response is the logarithmic scale.
+
+(b) Find the two cases that are most influential in the fit of the quadratic mean function for log(`Life`), and explain why they are influential. Delete these points from the data, refit the quadratic mean function, and compare with the fit with all the data.\
+    **Solution**:
+
+```{r}
+fit <- lm(log(Life) ~ Speed + Feed + I(Speed^2) + I(Feed^2) + Speed*Feed, data = lathe1)
+
+cooks <- cooks.distance(fit)
+which(cooks > 4/(length(lathe1$Life)-2-1))
+```
+
+```{r}
+influenceIndexPlot(fit,vars = 'Cook',id=list(location = "avoid",n=2, cex = 0.7))
+```
+
+```{r}
+cds <- cooks.distance(fit)
+cds
+```
+
+We can see that cases 9 and 10 are the most influential. They both are greater than 0.5 and outlies, suggesting that the two cases are likely influential.
+
+```{r}
+fit2 <- lm(log(Life) ~ Speed + Feed + I(Speed^2) + I(Feed^2) + Speed*Feed, data = lathe1[-c(9,10),])
+
+summary(fit)
+summary(fit2)
+```
+
+```{r}
+avPlots(fit)
+avPlots(fit2)
+```
+
+From the summaries and avPlots, we see that the standard errors are uniformly smaller using the reduced data set and that R^2 and adjusted R^2 are larger. 
