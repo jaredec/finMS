@@ -1,0 +1,172 @@
+---
+title: "PSTAT 126 - Assignment 3"
+subtitle: "Fall 2022"
+author: "Due: Tuesday, October 18 at 11:59 pm on Canvas"
+output:
+  pdf_document:
+    number_sections: true
+---
+
+*Note: **Submit both your `Rmd` and generated pdf file to Canvas.** Use the same indentation level as **Solution** markers to write your solutions. Improper indentation will break your document.*
+
+```{r setup, include=FALSE}
+# formats rendered outputs from inline R code
+# Register an inline hook:
+knitr::knit_hooks$set(inline = function(x) {
+  x <- sprintf("%1.2f", x)
+  paste(x, collapse = ", ")
+})
+```
+
+```{r message=FALSE}
+library(alr4)
+library(ggplot2)
+data('Heights')
+```
+
+1.  This problem uses the data set Heights from the alr4 package, which contains the heights of n = 1375 pairs of mothers (mheight) and daughters (dheight) in inches.
+
+<!-- -->
+
+(a) Compute the regression of dheight on mheight, and report the estimates, their standard errors, the value of the coefficient of determination, and the estimate of variance. Write a sentence or two that summarizes the results of these computa- tions.
+
+    **Solution**:
+
+    ```{r}
+    x <- Heights$mheight
+    y <- Heights$dheight
+    xbar <- mean(x)
+    ybar <- mean(y)
+    n <- length(y)
+    fit <- lm(y~x)
+    # Regression
+    Sxx <- sum((x-xbar)^2)
+    Syy <- sum((y-ybar)^2)
+    Sxy <- sum((x-xbar)*(y-ybar))
+
+    # Estimates
+    b1 = Sxy/Sxx
+    b1
+    b0 = ybar - b1*xbar
+    b0
+
+    yhat <- b0+b1*x
+
+    sse=sum((y-yhat)^2)
+    mse=sse/(n-2)
+
+    ssr <- sum((yhat-ybar)^2)
+    sstot <- sum((y-ybar)^2)
+
+    # Standard errors
+    se_b1 <- sqrt(mse/Sxx)
+    se_b1
+    se_b0 <-sqrt(mse*((1/n)+(xbar^2/Sxx)))
+    se_b0
+    # Coefficient of Determination
+    r <- ssr/sstot
+    r
+    # Estimate of Variance
+    var_est <- summary(fit)$sigma^2
+    var_est
+    # Also
+    mse
+      
+    ```
+
+    From the computations above we have that the estimates of $\beta_0$ and $\beta_1$ are 29.91744 and 0.541747. Also, our standard errors are 1.622469 and 0.02596069. The coefficient of determination is 0.2407957 and the estimate of variance is 5.136167. We know by the coefficient of determination that about 24% of the data fits the regression model, or that about 24% of the variablity of the daughters' height can be explained by the mothers' height.
+
+(b) Obtain a 99% confidence interval for $\beta_1$ from the data.
+
+    **Solution**:
+
+    ```{r}
+    confint(fit, level = 0.99) # x = mheight
+    ```
+
+    Our 99% confidence interval for $\beta_1$ is [0.4747836,0.6097104]
+
+(c) Obtain a predicted value and 90% prediction interval for a daughter whose mother is 58 inches tall.
+
+    **Solution**:
+
+    ```{r}
+    predict(fit, data.frame(x=58),interval='predict', level=0.90)
+    ```
+
+    Our predicted value is 61.33876 and our prediction interval is [57.60229,65.07523] <!-- -->
+
+<!-- -->
+
+2.  This problem uses the data set prostate from the faraway package (see problem 2 from HW 2).
+
+```{r}
+library(faraway)
+```
+
+<!-- -->
+
+a)  Using the variable lpsa as the response and lcavol as the predictor, use R to produce an ANOVA table for this regression fit.
+
+    **Solution**:
+
+    ```{r}
+    data('prostate')
+    lpsa <- prostate$lpsa
+    lcavol <- prostate$lcavol
+    ```
+
+```{r}
+newfit <- lm(lpsa~lcavol)
+anova(newfit)
+```
+
+b)  In the ANOVA table from part a), which quantity represents the variability in lpsa which is left unexplained by the regression?
+
+    **Solution**: The quantity 58.915 represents this variability. <!-- -->
+
+<!-- -->
+
+3.  This problem uses the data set baeskel from the alr4 package.
+
+```{r}
+library(alr4)
+data('baeskel')
+```
+
+<!-- -->
+
+a)  Fit the regression model with Tension as response and Sulfur predictor, and produce three diagnostic plots: Residuals vs. Fitted, Scale-Location and a QQ-plot. Comment on any violation of the standard linear model assumptions seen in these plots.
+
+    **Solution**:
+
+    ```{r}
+    sulfur <- baeskel$Sulfur
+    tension <- baeskel$Tension
+    fit3 <- lm(tension~sulfur)
+    plot(fit3,which = 1)
+    ```
+
+    ```{r}
+    plot(fit3, which = 2)
+    ```
+
+    ```{r}
+    plot(fit3, which = 3)
+    ```
+
+    Plot 1- Violation of Linearity Plot 3- Violation of Linearity and Constant error variance
+
+b)  Consider two alternative models given by the predictor transformations 1/Sulfur and log(Sulfur): With Sulfur on the horizontal axis and Tension on the vertical axis, fit these two alternatives and plot the regression fits along with the fit from part a). **Note that the two fits from this part will not be linear, since the predictor was transformed.** Hint: The R function invTranPlot is useful here.
+
+    **Solution**:
+
+    ```{r}
+    sulf1 <- 1/sulfur
+    invTranPlot(tension~sulf1, lambda=invTranEstimate(sulf1,tension)$lambda)
+    ```
+
+    ```{r}
+    logsulfur <- log(sulfur)
+    invTranPlot(tension~abs(logsulfur), lambda=invTranEstimate(abs(logsulfur),tension)$lambda)
+    ```
