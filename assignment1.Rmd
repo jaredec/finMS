@@ -1,0 +1,84 @@
+---
+title: "PSTAT 126 - Assignment 1"
+subtitle: "Fall 2022"
+author: "Due: Tuesday, October 4 at 11:59 pm on Canvas"
+output:
+  pdf_document:
+    number_sections: true
+---
+
+_Note: If you use `Rmd` format to work on your assignment, use the same indentation level as **Solution** markers to write your solutions. Improper indentation will break your document._
+
+1. Let $X$ and $Y$ be random variables, with $\mu_{X}=E(X), \mu_{Y}=E(Y), \sigma_{X}^{2}=\operatorname{Var}(X)$ and $\sigma_{Y}^{2}=\operatorname{Var}(Y)$
+
+    a. Prove the following property regarding $\operatorname{Cov}(X, Y)$. For a fixed real number $b$, show that
+    $$\begin{aligned}
+    \operatorname{Cov}(b+X, Y)=\operatorname{Cov}(X, Y) \quad \text { and } \quad \operatorname{Cov}(b X, Y)=b \operatorname{Cov}(X, Y)
+    \end{aligned}$$  
+
+        **Solution**:
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+    b. Prove the following property regarding $\operatorname{Corr}(X, Y)$. For any fixed real numbers $a$ and $b$, and $c, d>0$, show that
+    $$\begin{aligned}
+    \operatorname{Corr}(a+c X, b+d Y)=\operatorname{Corr}(X, Y).
+    \end{aligned}$$  
+
+        **Solution**: 
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+    c. For this part only, assume $\operatorname{Cov}(X, Y)>0$. According to lecture, this implies that there exists a real number $b_{1}$ such that $\operatorname{Var}\left(Y-b_{1} X\right)<\sigma_{Y}^{2}$. Show that this is true whenever $0<b_{1}<2 \beta_{1}$, where $\beta_{1}=\operatorname{Cov}(X, Y) / \sigma_{X}^{2}$.  
+    _Hint: $\operatorname{Var}\left(Y-b_{1} X\right)$ is a quadratic function of $b_{1}$. Use what you know about parabolas to answer this question._  
+
+        **Solution**: 
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+    d. Let $\beta_{1}$ be as in part c) and set $\beta_{0}=\mu_{Y}-\beta_{1} \mu_{X}$. Show that the minimal MSE (mean squared error) is
+    $$\begin{aligned}
+    \text{MSE}\left(\beta_{0}, \beta_{1}\right)=E\left[\left(Y-\beta_{0}-\beta_{1} X\right)^{2}\right]=\sigma_{Y}^{2}-\frac{\operatorname{Cov}^{2}(X, Y)}{\sigma_{X}^{2}}.
+    \end{aligned}$$  
+    To do this, complete the follwing steps.  
+
+        1) First, show that $E\left(Y-\beta_{0}-\beta_{1} X\right)=0$ so that
+        $$\begin{aligned}
+        \operatorname{MSE}\left(\beta_{0}, \beta_{1}\right)=\operatorname{Var}\left(Y-\beta_{0}-\beta_{1} X\right).
+        \end{aligned}$$  
+
+            **Solution**: 
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+        2) Use property 6) from lecture about the variance of the difference between random variables to show that
+        $$\begin{aligned}
+        \operatorname{Var}\left(Y-\beta_{0}-\beta_{1} X\right)=\sigma_{Y}^{2}+\beta_{1}^{2} \sigma_{X}^{2}-2 \beta_{1} \operatorname{Cov}(X, Y).
+        \end{aligned}$$  
+
+            **Solution**: 
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+        3) Use that fact that $\beta_{1}=\operatorname{Cov}(X, Y) / \sigma_{X}^{2}$ to simplify this last expression.  
+
+            **Solution**: 
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+2. We are now given data on $n$ observations $\left(x_{i}, Y_{i}\right), i=1, \ldots, n$. Assume we have a linear model, so that $E\left(Y_{i}\right)=\beta_{0}+\beta_{1} x_{i}$, and let $\hat{\beta}_{1}=S_{X Y} / S_{X X}$ and $\hat{\beta}_{0}=\bar{Y}-\hat{\beta}_{1} \bar{x}$ be the least squares estimates given in lecture.
+
+    a. Show that $E\left(S_{X Y}\right)=\beta_{1} S_{X X}$ and $E(\bar{Y})=\beta_{0}+\beta_{1} \bar{x}$, and use this to conclude that $E\left(\hat{\beta}_{1}\right)=\beta_{1}$ and $E\left(\hat{\beta}_{0}\right)=\beta_{0}$. In other words, these are unbiased estimators.  
+
+        **Solution**: 
+
+    b. The fitted values $\hat{Y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1} x_{i}$ are used as estimates of $E\left(Y_{i}\right)$, and the residuals $e_{i}=Y_{i}-\hat{Y}_{i}$ are used as surrogates for the unobservable errors $\varepsilon_{i}=Y_{i}-E\left(Y_{i}\right)$. By assumption, $E\left(\varepsilon_{i}\right)=0$. Show that the residuals satisfy a similar property, namely  
+    $$\begin{aligned}
+    \sum_{i=1}^{n} e_{i}=0
+    \end{aligned}$$  
+
+        **Solution**: 
+
+        ![](1x1.png){width=0%} <!-- increase width to also increase empty space below solution marker -->
+
+
