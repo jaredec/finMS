@@ -1,0 +1,239 @@
+---
+title: "PSTAT 126 - Assignment 6"
+subtitle: "Fall 2022"
+author: "Due: Tuesday, November 15 at 11:59 pm"
+output:
+  pdf_document:
+    number_sections: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+*Note: **Submit both your `Rmd` and generated pdf file to Gradescope.**
+Use the same indentation level as **Solution** markers to write your
+solutions. Improper indentation will break your document.*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+1.  Using the prostate data from the faraway package with lpsa (log
+    prostate specific antigen) as response and lcavol (log cancer
+    volume) as predictor, the fitted model is $$
+    \text { lpsa }=1.507+0.719 \text { lcavol }
+    $$
+
+Provide an interpretation of the estimated coefficient for lcavol based
+on the fact that both variables are log-transformed.
+
+**Solution**:
+
+Given lpsa and lcavol are both log-transformed, and with the lcavol
+coefficient of 0.719, then the expected value of lpsa is changed by
+100[(1+p)\^0.719-1]% where p is the % change in lcavol. For example, if
+lcavol is changed by 10%, then lpsa changes by 100[(1+.10)\^0.719-1] =
+7.09306%
+
+2.  In a study of faculty salaries in a small college in the Midwest, a
+    linear regression model was fit, giving the fitted mean function $$
+    E(\text { Salary } \mid \text { Sex })=24697-3340 \text { Sex, }
+    $$ where Sex equals 1 if the faculty member was female and 0 if
+    male. The response Salary is measured in dollars (the data are from
+    the 1970s).
+
+    (a) Give a sentence that describes the meaning of the two estimated
+        coefficients.
+
+    **Solution**:
+
+24697 is the expected salary for faculty members if male (0) and -3340
+is the decrease in salary if the faculty member is a female (1).
+
+(b) An alternative mean function fit to these data with an additional
+    term, Years, the number of years employed at this college, gives the
+    estimated mean function $$
+      E(\text { Salary } \mid \text { Sex, Years })=18065+201 \text { Sex }+759 \text { Years } .
+      $$ The important difference between these two mean functions is
+    that the coefficient for Sex has changed signs. Provide an
+    explanation as to how this could happen.
+
+**Solution**:
+
+Now, the salary for employees are not only considered by their sexuality
+but also their employment time in the company. So, an explanation as to
+why the coefficient has changed signs could be that the male faculty
+members on average have been employed longer than female faculty
+members. So if we were to control for the number of years employed, the
+salary of female faculty members is actually higher than that of males.
+Thus in the first model, we do not account for years employed and so it
+seems that the salary of male faculty members is larger. Hence the
+coefficient for sex has changed signs.
+
+3.  This problem uses the data set cakes from the alr4 package, which
+    contains the results of a baking experiment on n = 14 packaged cake
+    mixes. The variables X1 and X2 data are the predictors representing
+    baking time in minutes and baking temperature in degrees Fahrenheit,
+    respectively. The response Y is a palatability score indicating
+    quality of the cake.
+
+```{r}
+library(alr4)
+```
+
+(a) Fit the model\
+    $$
+      E(\mathrm{Y} \mid \mathrm{X} 1, \mathrm{X} 2)=\beta_0+\beta_1 \mathrm{X} 1+\beta_2 \mathrm{X} 2+\beta_{11} \mathrm{X} 1^2+\beta_{22} \mathrm{X} 2^2+\beta_{12} \mathrm{X} 1 \mathrm{X} 2
+      $$ and verify that the p-values for the quadratic terms and the
+    interaction are all less than 0.005.
+
+**Solution**:
+
+```{r}
+data(cakes)
+attach(cakes)
+fit <- lm(Y~ X1+X2+I(X1^2)+I(X2^2)+I(X1*X2), data = cakes)
+summary(fit)
+anova(fit)
+```
+
+We can see by the summary and anova tables that the p-values are indeed
+all less than 0.005.
+
+(b) The cake experiment was carried out in two blocks of seven
+    observations each. It is possible that the response might differ by
+    block, due to differences in air temperature or humidity, for
+    example. Add a main effect for the Block variable to model in part
+    a), fit the model, and summarize results.
+
+**Solution**:
+
+```{r}
+fit1 <- lm(Y~ X1+X2+I(X1^2)+I(X2^2)+I(X1*X2)+ block, data = cakes)
+summary(fit1)
+anova(fit1)
+```
+
+We can see from the table that the block variable is not significant.
+
+4.  The data BGSall in the alr4 package contains information on n = 136
+    children in the Berkeley Guidance study, including heights at ages 9
+    and 18 (HT9 and HT18), and gender (Sex = 0 for male, 1 for female).
+    Consider the regression of HT18 on HT9 and the grouping factor Sex.
+
+```{r}
+data('BGSall')
+attach(BGSall)
+```
+
+(a) Draw the scatterplot of HT18 versus HT9, using a different symbol
+    for males and females. Comment on the information in the graph about
+    an appropriate mean function for these data.
+
+**Solution**:
+
+```{r}
+HT18 <- BGSall$HT18
+HT9 <- BGSall$HT9
+sex <- BGSall$Sex
+
+plot(HT9,HT18,type = 'n', main = 'Height Age 9 vs. Height Age 18')
+points(HT9[Sex==0], HT18[Sex==0],col = 'blue', pch =15)
+points(HT9[Sex==1], HT18[Sex==1],col = 'magenta', pch = 16)
+legend('topleft',bty='n',col=c('blue','magenta'),c('Male','Female'),pch =c(15,16))
+```
+
+The appropriate mean function for this data would be fitting a parallel model. Here, we see that there is no interaction between gender and age groups.
+
+(b) Obtain the appropriate test for a parallel regression model.
+
+**Solution**:
+
+```{r}
+fit2 <- lm(HT18 ~ HT9 + factor(Sex), data = BGSall)
+fit3 <- lm(HT18 ~ HT9*factor(Sex), data = BGSall)
+anova(fit2,fit3)
+```
+
+The p-value is 0.08749, greater than 0.05; thus we accept the null hypothesis that the coefficient for interaction is 0 at a 5% confidence interval. Hence the parallel regression model is adequate. 
+
+(c) Assuming the parallel regression model is adequate, estimate a 95%
+    confidence interval for the difference between males and females.
+    For the parallel regression model, this is the difference in the
+    intercepts of the two groups.
+
+**Solution**:
+
+```{r}
+summary(fit2)
+```
+Observing the summary, we see that The difference in the intercepts of the two groups (male and female) is 11.69584. SO, the estimated difference between males and females is 11.69584 and the standard error is 0.59036 and degree of freedom of residual is equal to 133.Now constructing a t-value for the test,
+
+```{r}
+abs(qt(0.05/2, 133))
+```
+
+```{r}
+(11.69584 - 1.98 * 0.59036)
+(11.69584 + 1.98 * 0.59036)
+```
+Hence, our 95% confidence interval between males and females is :
+(10.52693, 12.86475)
+
+5.  The data set infmort from the faraway package contains information
+    on the mortality of infants for 105 nations. The variable mortality
+    gives the number of deaths per 1000 live births, while income is the
+    per capita income in US dollars and region indicates the geographic
+    area of the nation. Consider the model $$
+    E(\log (\text { mortality }) \mid \text { income,region })=\beta_0+\beta_1 \log (\text { income })+\beta_2 \text { region }+\beta_{12} \text { region } * \log (\text { income })
+    $$
+```{r}
+library("faraway")
+data("infmort")
+```
+    (a) State the null and alternative hypotheses for the overall F-test
+        for this model. Perform the test and summarize results.
+
+    **Solution**:
+
+Null Hypothesis:
+$$ H_0: \beta_1 = \beta_2 =\beta_{12}= 0 $$
+Alternative hypothesis:
+$$ H_1: \text {At least one of } \beta_{ai}\neq 0 $$
+Perform the test:
+```{r}
+fit4 <- lm(log(mortality)~region+log(income)+log(income)*region, data = infmort)
+summary(fit4)
+```
+
+From Summary, observe that F= 24.29 on 7 and 93 DF and p-value is 2.2e-16.
+Therefore, we reject the null hypothesis since p-value is less than the 0.05, and
+we can conclude that the fitted model is significant.
+
+
+(b) Explain the practical meaning of the hypothesis
+    $\mathcal{H}_0: \beta_{12}=\beta_2=0$ in the context of the above
+    model.
+
+**Solution**:
+Of the above model,  $\mathcal{H}_0: \beta_{12}=\beta_2=0$ implies that the region has no impact on the relationship between income and mortality, so when given income and region, log(mortality) is independent of the region and interaction between the region and log(income).
+
+## c).
+
+(c) Perform a test for the hypothesis in part b) and summarize your
+    results.
+
+**Solution**:
+
+```{r}
+m1 <- lm(log(mortality)~log(income), data = infmort)
+m2 <- lm(log(mortality)~log(income)+ region +log(income)*region, data = infmort)
+anova(m1, m2)
+```
+
+We see that the p-value is 1.31e-05, which is much smaller than 0.05. Therefore, we reject the null hypothesis that beta12 and beta2 are 0. Therefore, the region and interaction between region and log(income) are significant in determining the log(mortality).
+
