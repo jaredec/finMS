@@ -1,0 +1,148 @@
+---
+title: "PSTAT 126 - Assignment 5"
+subtitle: "Fall 2022"
+author: "Due: Tuesday, November 8 at 11:59 pm on Gradescope"
+output:
+  pdf_document:
+    number_sections: true
+---
+
+*Note: **Submit both your `Rmd` and generated pdf file to Canvas.** Use the same indentation level as **Solution** markers to write your solutions. Improper indentation will break your document.*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+1.  
+
+<!-- -->
+
+(a) In Lab 5 we showed that the OLS estimator for the Simple Linear Regression $$Y_i = \beta_0 + \beta_1 x_i + \epsilon_i$$ is given by $$ 
+    \begin{pmatrix}
+      \hat\beta_0\\\hat\beta_1
+    \end{pmatrix}
+    =
+    \frac{1}{n\left(\sum_{i=1}^n x_i^2\right) - \left(\sum_{i=1}^n x_i\right)^2}
+    \begin{pmatrix}
+      \left(\sum_{i=1}^n x_i^2\right)
+      \left(\sum_{i=1}^n Y_i\right) - \left(\sum_{i=1}^nx_i\right)
+      \left(\sum_{i=1}^n x_iY_i\right)\\
+      n\left(\sum_{i=1}^n x_iY_i\right) - 
+      \left(\sum_{i=1}^n x_i\right)\left(\sum_{i=1}^n Y_i\right)
+    \end{pmatrix}.
+    $$ Show that this expression is equivalent to the familiar identity $$
+    \begin{pmatrix}
+      \hat\beta_0\\\hat\beta_1
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      \bar{Y} - \bar{x}\hat\beta_1 \\
+      S_{xY}/S_{xx}
+    \end{pmatrix}.
+    $$ \emph{Hint: Refer to Lab 1 for formulas for $S_{xx}$ and $S_{xY}$.}
+
+**Solution**:
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("partA.pdf",error=FALSE)
+
+```
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("partA2.pdf",error=FALSE)
+
+```
+
+(b) An *intercept-only* model is an alternative way to express that univariate data form a random sample. $Y_1, \dots, Y_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$ is equivalent to $$Y_i = \mu + \epsilon_i \;,\quad i = 1, \dots, n$$ with the standard model assumptions.
+
+<!-- -->
+
+i.  Write the intercept-only model in matrix form.
+
+**Solution**:
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("partB.pdf",error=FALSE)
+
+```
+
+ii. Derive the least squares estimator of $\mu$ using the general OLS estimator $(\boldsymbol{X^TX})^{-1}\boldsymbol{X^TY}$.
+
+**Solution**:
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("partB2.pdf",error=FALSE)
+
+```
+
+\newpage
+
+2.  For the `prostate` data, fit a model with `lpsa` as the response and the other variables as predictors:
+
+<!-- -->
+
+(a) Compute 90 and 95% CIs for the parameter associated with `age`. Using just these intervals, what could we have deduced about the $p$-value for `age` in the regression summary?
+```{r}
+library(faraway)
+```
+
+
+**Solution**:
+```{r}
+data('prostate')
+fit <- lm(lpsa ~ .,prostate)
+summary(fit)
+```
+```{r}
+confint(fit, c("age"), .90)
+confint(fit, c("age"), .95)
+```
+We see that the 95% CI for age includes 0 but the 90% CI for age doesn't include 0, hence age is not significant on lpsa at  0.05, but it is at 0.1. So, we can expect the p-value to be between 0.05 and 0.1. Looking at the summary, the p-value for age is 0.08229, which lies in the interval as expected.
+
+(b) Compute and display a 95% joint confidence region for the parameters associated with `age` and `lbph`. Plot the origin on this display. The location of the origin on the display tells us the outcome of a certain hypothesis test. State that test and its outcome.
+
+**Solution**:
+```{r}
+library(ellipse)
+plot(ellipse(fit, c('age', 'lbph')), type = "l") # 0.95 level default
+points(0, 0)
+points(coef(fit)['age'],coef(fit)['lbph'])
+abline(v= confint(fit)['age',], lty = 2)
+abline(h= confint(fit)['lbph',], lty = 2)
+```
+We see that the origin lies within the 95% confidence region, therefore we do not reject the null hypothesis, that age = lbph = 0.
+
+(c) In the text, we made a permutation test corresponding to the F-test for the significance of all the predictors. Execute the permutation test corresponding to the t-test for `age` in this model. (Hint: `summary(g)$coef[4,3]` gets you the t-statistic you need if the model is called `g`.)
+
+**Solution**:
+```{r}
+tval <- summary(fit) %>% coef() %>% .['age', 't value']
+
+# permutation test
+permute <- function(nsims) {
+    map_dbl(1:nsims,
+            ~ lm(sample(lpsa) ~ ., data = prostate) %>%
+            summary() %>%
+            coef() %>%
+            .['age', 't value'])
+}
+```
+
+```{r}
+mean(abs(permute(10000)) > abs(tval))
+```
+We see that we obtain a p-value approximately equal to 0.08229 (calculated earlier) permutating n-times.
+
+(d) Remove all the predictors that are not significant at the 5% level. Test this model against the original model. Which model is preferred?
+
+**Solution**:
+```{r}
+fit1 <- update(fit, . ~ lcavol + lweight + svi)
+summary(fit1)
+anova(fit,fit1)
+```
+We can see by looking at the Pr column (0.2167) that there is not a significant improvement in this model compared to the original model. Hence we choose the original model.
