@@ -1,0 +1,210 @@
+---
+title: "PSTAT 170 Assignment 5"
+output:
+  pdf_document: default
+  html_document: default
+date: "2022-11-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+```{r}
+BScall <- function(t=0,T,S,K,r,q=0,sigma,isPut=0) {
+# t and T are measured in years; all parameters are annualized
+# q is the continuous dividend yield
+d1 <- (log(S/K)+(r-q+sigma^2/2)*(T-t))/(sigma*sqrt(T-t))
+d2 <- d1-sigma*sqrt(T-t)
+binary <- pnorm(-d2)*exp(-r*T)
+
+# Call Delta at t
+Delta <- exp(-q*(T-t))*pnorm(d1)
+Gamma <- exp(-q*(T-t))*exp(-d1^2/2)/sqrt(2*pi)/S/sigma/sqrt(T-t)
+Vega <- S*exp(-q*(T-t))/sqrt(2*pi)*exp(-d1^2/2)*sqrt(T-t)
+Theta <- -S*exp(-q*(T-t))*sigma/sqrt(T-t)/2*dnorm(d1) - r*K*exp(-r*(T-t))*pnorm(d2) + 
+    q*S*exp(-q*(T-t))*pnorm(d1)
+Rho <- (T-t)*K*exp(-r*(T-t))*pnorm(d2)
+
+
+# Black-Scholes formula for Calls
+BSprice <- -K*exp(-r*(T-t))*pnorm(d2)+S*Delta
+
+if (isPut==1) {
+    Delta <- -exp(-q*(T-t))*pnorm(-d1)
+    BSprice <- S*Delta+K*exp(-r*(T-t))*pnorm(-d2)
+    Theta <- -S*exp(-q*(T-t))*sigma/sqrt(T-t)/2*dnorm(d1) + r*K*exp(-r*(T-t))*pnorm(-d2) - 
+    q*S*exp(-q*(T-t))*pnorm(-d1)
+    Rho <- -(T-t)*K*exp(-r*(T-t))*pnorm(-d2)
+}
+Bank <- BSprice-Delta*S
+
+return (list(Delta=Delta,Gamma=Gamma,Theta=Theta,Vega=Vega,Rho=Rho,Price=BSprice,d1=d1,d2=d2,B=Bank))
+}
+
+```
+
+### Call
+
+```{r}
+# Call 
+BScall(t=0/365,T=55/365,S=33,K=34,r=0.06,q=0.01,sigma=0.32,isPut=0)$Price
+# Delta
+BScall(t=0/365,T=55/365,S=33,K=34,r=0.06,q=0.01,sigma=0.32,isPut=0)$Delta
+
+# Call Next Day
+BScall(t=1/365,T=55/365,S=34.5,K=34,r=0.06,q=0.01,sigma=0.32,isPut=0)$Price
+```
+
+### Put
+
+```{r}
+# Put
+BScall(t=0/365,T=55/365,S=33,K=34,r=0.06,q=0.01,sigma=0.32,isPut=1)$Price
+
+# Delta
+BScall(t=0/365,T=55/365,S=33,K=34,r=0.06,q=0.01,sigma=0.32,isPut=1)$Delta
+
+# Put Next day 
+BScall(t=1/365,T=55/365,S=34.5,K=34,r=0.06,q=0.01,sigma=0.32,isPut=1)$Price
+
+
+```
+
+## Problem 2
+
+```{r}
+# 90 day Put
+BScall(t=0/365,T=90/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+
+BScall(t=0/365,T=90/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=0/365,T=90/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Gamma
+
+# 60 day Put
+BScall(t=0/365,T=60/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+
+BScall(t=0/365,T=60/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=0/365,T=60/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Gamma
+
+```
+
+```{r}
+# P(1/365) for S = 48,50,52
+BScall(t=1/365,T=90/365,S=48,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/365,T=60/365,S=48,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+
+BScall(t=1/365,T=90/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/365,T=60/365,S=50,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+
+BScall(t=1/365,T=90/365,S=52,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/365,T=60/365,S=52,K=50,r=0.06,q=0,sigma=0.25,isPut=1)$Price
+```
+
+## Problem 3
+
+```{r}
+# Greeks
+BScall(t=0/365,T=1,S=50,K=40,r=0.05,q=0.03,sigma=0.3,isPut=1)
+
+BScall(t=0/365,T=1,S=50,K=45,r=0.05,q=0.03,sigma=0.3,isPut=1)
+```
+
+```{r}
+BScall(t=0/365,T=1,S=50,K=40,r=0.05,q=0.03,sigma=0.302,isPut=1)
+BScall(t=0/365,T=1,S=50,K=45,r=0.05,q=0.03,sigma=0.302,isPut=1)
+```
+
+## Problem 4
+
+```{r}
+# Determining d1 and d2
+BScall(t=0/365,T=1,S=100,K=103,r=0.06,q=0.05,sigma=0.15,isPut=0)
+```
+
+```{r}
+# 200 simuations
+r <-0.06; delt <- 0.05; S0 <- 100; sigm <- 0.15; T <- 1
+S_T <- S0*exp( (r-delt-0.5*sigm^2)*T + sigm*sqrt(T)*rnorm(200))
+exp(-r*T)*mean( pmax((S_T-100)*(S_T>103)), 0)
+
+```
+
+```{r}
+# 10000 simulations
+r <-0.06; delt <- 0.05; S0 <- 100; sigm <- 0.15; T <- 1
+S_T <- S0*exp( (r-delt-0.5*sigm^2)*T + sigm*sqrt(T)*rnorm(10000))
+exp(-r*T)*mean( pmax((S_T-100)*(S_T>103)), 0)
+```
+
+## Problem 5
+
+```{r}
+# Scenario 1
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+
+BScall(t=2/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=2/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=3/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=3/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+```
+
+```{r}
+# Scenario 2
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+
+BScall(t=2/52,T=4/52,S=99,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=2/52,T=4/52,S=99,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=3/52,T=4/52,S=98,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=3/52,T=4/52,S=98,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+```
+
+```{r}
+# Scenario 3
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+
+BScall(t=2/52,T=4/52,S=99,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=2/52,T=4/52,S=99,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=3/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=3/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+```
+
+```{r}
+# Scenario 4
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=0/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=1/52,T=4/52,S=100,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+
+BScall(t=2/52,T=4/52,S=96,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=2/52,T=4/52,S=96,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+
+BScall(t=3/52,T=4/52,S=97,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Price
+BScall(t=3/52,T=4/52,S=97,K=100,r=0.04,q=0,sigma=0.25,isPut=1)$Delta
+```
