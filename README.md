@@ -2,7 +2,7 @@
 Hello, this is a compilation of some of the programming projects I have completed during my time at UCSB. Here is a description of each folder name (ordered by descending completed date):
 
 Mathematical Finance (Fall 2022)
-- This folder contains all programming portions of assignments for this course and a csv file (AAPL) utilizing the black scholes model for constructing a delta neutral portfolio of AAPL stock's log returns.  
+- This folder contains all programming portions of assignments for this course and a csv file AAPL.csv (you made need to scroll to the right) utilizing the black scholes model for constructing a delta neutral portfolio of AAPL stock's log returns.  
 - This course describes mathematical methods for estimating and evaluating asset pricing models, equilibrium and derivative pricing, options, bonds, and the term-structure of interest rates. Also introduces finance optimization models for risk management and financial engineering.
 
 Regression Analysis (Fall 2022)
