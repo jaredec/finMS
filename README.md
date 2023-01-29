@@ -23,4 +23,4 @@ SAS Base Programming (Winter 2022)
 - In depth SAS programming course. Topics include importing/exporting raw data files, manipulating/transforming data, combining SAS data sets, generating reports, handling syntax and logic errors.
 
 Principles of Data Science with R (Fall 2020) 
-- While I no longer have material for this course, topics include: descriptive statistics, distributions and graphics in R. Relational database management systems including the relational model, relational algebra, database design principles and data manipulation using ###SQL. An introduction to the concept of big data.
+- While I no longer have material for this course, topics include: descriptive statistics, distributions and graphics in R. Relational database management systems including the relational model, relational algebra, database design principles and data manipulation using #SQL. An introduction to the concept of big data.
