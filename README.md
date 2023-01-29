@@ -1,5 +1,5 @@
 # Jared Connolly 
-Hello, this is a compilation of some of the programming projects I have completed during my time at UC Santa Barbara. Here is a description of each folder name (ordered by descending completed date):
+Hello, this is a compilation of programming projects I have completed during my time at UC Santa Barbara. Here is a description of each folder name (ordered by descending completed date):
 
 Mathematical Finance (Fall 2022)
 - This folder contains all programming portions of assignments for this course using R.
