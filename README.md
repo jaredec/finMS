@@ -11,13 +11,12 @@ Regression Analysis (Fall 2022)
 - Topics include linear and multiple regression, analysis of residuals, transformations, variable and model selection including stepwise regression, and analysis of covariance. This course stresses the use of computer packages to solve real-world problems.
 
 Numerical Analysis A, B, & C (Winter 2022, Spring 2022 & Summer 2022)
+- This folder contains all the programming assignments I have completed. I used Jupyter Notebook to record and display my solutions in Markdown or Python to each homework question. The common Python libraries I used were numpy, matplotlib and math.
 - This course emphasizes the applications of numerical differentiation and integration, initial-value problems for ordinary differential equations, direct methods for solving linear systems, and iterative techniques in matrix algebra. Moreover, the course involves error analysis, solutions of equations in one variable, interpolation and polynomial approximation.
-- This folder contains all the programming assignments I have completed. I used Jupyter Notebook to record and display my solutions in Markdown or Python to each homework question. The common Python libraries I used were numpy, matplotlib, math, and csv.
-
 
 Applied Stochastic Processes A & B (Spring & Summer 2022)
 - This folder contains all the homework assignments I have completed for the first half of this course. I used Jupyter Notebook to program Python functions/computations relating to discrete and continous stochastic processes. 
-- Discrete probability models. Simulation techniques for random variables. Discrete time stochastic processes: random walks and Markov chains with applications to Monte Carlo simulation and mathematical finance. While there were not programming assignments for the second part of this course, we focused on continuous time stochastic processes: Poisson process, Markov chains, Renewal process, Brownian motion, including simulation of these processes. Applications to Black-Scholes model, insurance and ruin problems and related topics. 
+- Topics include discrete probability models and simulation techniques for random variables. Discrete time stochastic processes: random walks and Markov chains with applications to Monte Carlo simulation and mathematical finance. While there were not programming assignments for the second part of this course, we focused on continuous time stochastic processes: Poisson process, Markov chains, Renewal process, Brownian motion, including simulation of these processes. Applications to Black-Scholes model, insurance and ruin problems and related topics. 
 
 SAS Base Programming (Winter 2022)
 - This folder contains homework assignments I have completed for this course, using SAS Studio.
