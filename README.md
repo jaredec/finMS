@@ -2,7 +2,7 @@
 Hello, this is a compilation of some of the programming projects I have completed during my time at UC Santa Barbara. Here is a description of each folder name (ordered by descending completed date):
 
 Mathematical Finance (Fall 2022)
-- This folder contains all programming portions of assignments for this course using RMarkdown.
+- This folder contains all programming portions of assignments for this course using R.
 - In addition there is a csv file (AAPL.csv) utilizing the black scholes model for constructing a delta neutral portfolio of the stock AAPL's log returns--you may need to scroll to the right when viewing. 
 - This course describes mathematical methods for estimating and evaluating asset pricing models, equilibrium and derivative pricing, options, bonds, and the term-structure of interest rates. Also introduces finance optimization models for risk management and financial engineering.
 
@@ -11,9 +11,9 @@ Regression Analysis (Fall 2022)
 - Topics include linear and multiple regression, analysis of residuals, transformations, variable and model selection including stepwise regression, and analysis of covariance. This course stresses the use of computer packages to solve real-world problems.
 
 Numerical Analysis A, B, & C (Winter 2022, Spring 2022 & Summer 2022)
-- The topics I learned for this course were Numerical Differentiation and Integration, Initial-Value Problems for Ordinary Differential Equations, Direct Methods for Solving Linear Systems, and Iterative Techniques in Matrix Algebra. The topics I learned in this course were Mathematical Preliminaries and Error Analysis, Solutions of Equations in One Variable, and Interpolation and Polynomial Approximation.
+- This course emphasizes the applications of numerical differentiation and integration, initial-value problems for ordinary differential equations, direct methods for solving linear systems, and iterative techniques in matrix algebra. Moreover, the course involves error analysis, solutions of equations in one variable, interpolation and polynomial approximation.
 - This folder contains all the programming assignments I have completed. I used Jupyter Notebook to record and display my solutions in Markdown or Python to each homework question. The common Python libraries I used were numpy, matplotlib, math, and csv.
-The topics I learned in this course were Mathematical Preliminaries and Error Analysis, Solutions of Equations in One Variable, and Interpolation and Polynomial Approximation.
+
 
 Applied Stochastic Processes A & B (Spring & Summer 2022)
 - This folder contains all the homework assignments I have completed for the first half of this course. I used Jupyter Notebook to program Python functions/computations relating to discrete and continous stochastic processes. 
