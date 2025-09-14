@@ -1,4 +1,4 @@
-# Jared Connolly (Temporarily Public)
+### Jared Connolly - Temporarily available for viewing (9/15/2025)
 Hello, this is a compilation of some programming projects I have completed during my time at UC Santa Barbara. Here is a description of each folder name (ordered by descending completed date):
 
 Mathematical Finance (Fall 2022)
